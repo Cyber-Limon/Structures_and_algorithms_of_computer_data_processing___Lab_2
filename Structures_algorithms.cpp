@@ -27,13 +27,13 @@ int input() {
 
 
 
-int generation() {
+int generation(bool show) {
 	int r = rand() * rand() % 1000000;
 
 	if (r / 100000 == 0)
-		generation();
+		generation(show);
 	else {
-		cout << "\nСгенерированное значение: " << r << endl;
+		if (show) cout << "\nСгенерированное значение: " << r << endl;
 		return r;
 	}
 }
@@ -53,7 +53,7 @@ int setting_value() {
 	if (var == 1)
 		return input();
 	else
-		return generation();
+		return generation(true);
 }
 
 
@@ -232,11 +232,8 @@ int main() {
 
 	int i = 0;
 	while (i < key_value[2]) {
-		int r = rand() * rand() % 1000000;
+		int r = generation(false);
 		bool flag = true;
-
-		if (r / 100000 == 0)
-			continue;
 
 		for (int n = 0; n < i; n++) {
 			if (sample[n] == r) {
