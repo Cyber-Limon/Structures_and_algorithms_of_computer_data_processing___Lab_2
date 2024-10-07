@@ -1,9 +1,16 @@
-﻿#include <iostream>
+#include <iostream>
 #include <ctime>
 #include <string>
 
 
+
 using namespace std;
+
+int hash_function(int r) {
+	return ((r / 100000 + r / 10000 % 10) % 10 * 100 + (r / 1000 % 100 + r / 100 % 1000) % 10 * 10 + (r / 10 % 10000 + r % 10) % 10);
+}
+
+
 
 int input() {
 	cout << "\nВведите шестизначный элемент: ";
@@ -51,7 +58,7 @@ int setting_value() {
 
 
 
-void output_hash_table (int table[], int size_table) {
+void output_hash_table(int table[], int size_table) {
 	cout << "\n\nХеш-таблица:\n";
 
 	for (int i = 0; i < size_table; i++) {
@@ -64,7 +71,7 @@ void output_hash_table (int table[], int size_table) {
 
 
 void add(int table[], int key_value[], int transition, int r, bool show) {
-	int pos = ((r / 100000 + r / 10000 % 10) % 10 * 100 + (r / 1000 % 100 + r / 100 % 1000) % 10 * 10 + (r / 10 % 10000 + r % 10) % 10);
+	int pos = hash_function(r);
 
 	int message = 0;
 
@@ -73,7 +80,7 @@ void add(int table[], int key_value[], int transition, int r, bool show) {
 		if (table[(pos + n * n) % key_value[3]] == 0 || table[(pos + n * n) % key_value[3]] == -1) {
 			message = (pos + n * n) % key_value[3];
 			table[message] = r;
-			key_value[4] = key_value[4] + n + 1;			
+			key_value[4] = key_value[4] + n + 1;
 			break;
 		}
 	}
@@ -117,7 +124,7 @@ void calc_parameters(int key_value[]) {
 
 
 void search(int table[], int key_value[], int transition, int r, bool show) {
-	int pos = ((r / 100000 + r / 10000 % 10) % 10 * 100 + (r / 1000 % 100 + r / 100 % 1000) % 10 * 10 + (r / 10 % 10000 + r % 10) % 10);
+	int pos = hash_function(r);
 
 	int n = 0;
 	for (; n < transition; n++) {
@@ -164,7 +171,7 @@ void search(int table[], int key_value[], int transition, int r, bool show) {
 
 
 
-void addition(int table[], int key_value[], int transition, int r, bool show) {	
+void addition(int table[], int key_value[], int transition, int r, bool show) {
 	search(table, key_value, transition, r, false);
 
 	if (key_value[1] == -1) {
@@ -213,8 +220,8 @@ int main() {
 
 	int size_sample = 45;
 	int size_table = size_sample * 1.5;
-	int *sample = new int[size_sample];
-	int *table = new int[size_table];
+	int* sample = new int[size_sample];
+	int* table = new int[size_table];
 	int transition = 500;
 	int steps = 0;
 
