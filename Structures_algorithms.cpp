@@ -7,7 +7,8 @@
 using namespace std;
 
 int hash_function(int r) {
-	return ((r / 100000 + r / 10000 % 10) % 10 * 100 + (r / 1000 % 100 + r / 100 % 1000) % 10 * 10 + (r / 10 % 10000 + r % 10) % 10);
+	return ((r / 100000 + r / 10000 % 10) % 10 * 100 + (r / 1000 % 100 + r / 100 % 1000) % 10 * 10 
+												     + (r / 10 % 10000 + r % 10) % 10);
 }
 
 
@@ -17,31 +18,28 @@ int input() {
 	int r;
 	cin >> r;
 
-	if ((r / 100000) != 0 and (r / 1000000) == 0)
+	if (r >= 100000 and r < 1000000)
 		return r;
 	else {
 		cout << "ОШИБКА ВВОДА\n";
 		input();
 	}
-}
+}	
 
 
 
 int generation(bool show) {
-	int r = rand() * rand() % 1000000;
-
-	if (r / 100000 == 0)
-		generation(show);
-	else {
-		if (show) cout << "\nСгенерированное значение: " << r << endl;
-		return r;
-	}
+	int r = (rand() % 9 + 1) * 100000 + rand() * rand() % 100000;
+	
+	if (show) cout << "\nСгенерированное значение: " << r << endl;
+	
+	return r;
 }
 
 
 
 int setting_value() {
-	cout << "\n\nВыберите способ задания значения элемента:\n";
+	cout << "\nВыберите способ задания значения элемента:\n";
 	cout << "- самостоятельно ввести       - нажмите 1\n";
 	cout << "- автоматически сгенерировать - нажмите 2\n";
 	cout << "* примечание: при неправильном выборе \n  значение будет сгенерировано автоматически\n";
@@ -58,10 +56,10 @@ int setting_value() {
 
 
 
-void output_hash_table(int table[], int size_table) {
+void output_hash_table(int table[], int key_value[]) {
 	cout << "\n\nХеш-таблица:\n";
 
-	for (int i = 0; i < size_table; i++) {
+	for (int i = 0; i < key_value[3]; i++) {
 		if (i != 0 and i % 5 == 0)
 			cout << endl;
 		cout << i << ")\t" << table[i] << "\t";
@@ -70,28 +68,28 @@ void output_hash_table(int table[], int size_table) {
 
 
 
-void add(int table[], int key_value[], int transition, int r, bool show) {
+void add(int table[], int key_value[], int r, bool show) {
 	int pos = hash_function(r);
 
 	int message = 0;
 
 	int n = 0;
-	for (; n < transition; n++) {
+	for (; n < key_value[5]; n++) {
 		if (table[(pos + n * n) % key_value[3]] == 0 || table[(pos + n * n) % key_value[3]] == -1) {
 			message = (pos + n * n) % key_value[3];
 			table[message] = r;
-			key_value[4] = key_value[4] + n + 1;
+			key_value[4] += n + 1;
 			break;
 		}
 	}
 
-	if (n == transition) {
-		while (table[(pos + n * n) % key_value[3]] != 0 && table[(pos + n * n) % key_value[3]] != -1)
+	if (n == key_value[5]) {
+		while (table[(pos + n) % key_value[3]] != 0 && table[(pos + n) % key_value[3]] != -1)
 			n++;
 
 		message = (pos + n) % key_value[3];
 		table[message] = r;
-		key_value[4] = key_value[4] + n + 1;
+		key_value[4] += n + 1;
 	}
 
 	if (show) {
@@ -103,7 +101,7 @@ void add(int table[], int key_value[], int transition, int r, bool show) {
 
 void end(int table[], int key_value[], bool show) {
 	if (show) {
-		output_hash_table(table, key_value[3]);
+		output_hash_table(table, key_value);
 
 		cout << "\n\nДля продолжения что-нибудь введите: ";
 		int s;
@@ -118,20 +116,19 @@ void end(int table[], int key_value[], bool show) {
 void calc_parameters(int key_value[]) {
 	cout << "\n\nРассчитанные параметры:\n";
 	cout << "- коэффициент заполнения таблицы = " << 1.0 * key_value[2] / key_value[3] << "\n";
-	cout << "- среднее число шагов            = " << 1.0 * key_value[4] / key_value[2] << "\n";
+	cout << "- среднее число шагов            = " << 1.0 * key_value[4] / key_value[6] << "\n";
 }
 
 
 
-void search(int table[], int key_value[], int transition, int r, bool show) {
+void search(int table[], int key_value[], int r, bool show) {
 	int pos = hash_function(r);
 
 	int n = 0;
-	for (; n < transition; n++) {
+	for (; n < key_value[5]; n++) {
 		if (table[(pos + n * n) % key_value[3]] == 0) {
 			cout << "\nЭлемента в таблице нет";
-			key_value[0] = -1;
-			key_value[1] = -1;
+			key_value[0] = key_value[1] = -1;
 			break;
 		}
 		else if (table[(pos + n * n) % key_value[3]] == r) {
@@ -142,14 +139,13 @@ void search(int table[], int key_value[], int transition, int r, bool show) {
 		}
 	}
 
-	if (n == transition) {
-		transition = transition + key_value[3];
+	if (n == key_value[5]) {
+		int transition = key_value[5] + key_value[3];
 
 		for (; n < transition; n++)
 			if (table[(pos + n) % key_value[3]] == 0) {
 				cout << "\nЭлемента в таблице нет";
-				key_value[0] = -1;
-				key_value[1] = -1;
+				key_value[0] = key_value[1] = -1;
 				break;
 			}
 			else if (table[(pos + n) % key_value[3]] == r) {
@@ -160,10 +156,9 @@ void search(int table[], int key_value[], int transition, int r, bool show) {
 			}
 	}
 
-	if (n == transition) {
+	if (n == key_value[5] + key_value[3]) {
 		cout << "\nЭлемента в таблице нет";
-		key_value[0] = -1;
-		key_value[1] = -1;
+		key_value[0] = key_value[1] = -1;
 	}
 
 	end(table, key_value, show);
@@ -171,12 +166,13 @@ void search(int table[], int key_value[], int transition, int r, bool show) {
 
 
 
-void addition(int table[], int key_value[], int transition, int r, bool show) {
-	search(table, key_value, transition, r, false);
+void addition(int table[], int key_value[], int r, bool show) {
+	search(table, key_value, r, false);
 
 	if (key_value[1] == -1) {
-		add(table, key_value, transition, r, true);
+		add(table, key_value, r, true);
 		key_value[2]++;
+		key_value[6]++;
 	}
 
 	end(table, key_value, show);
@@ -184,8 +180,8 @@ void addition(int table[], int key_value[], int transition, int r, bool show) {
 
 
 
-void removal(int table[], int key_value[], int transition, int r, bool show) {
-	search(table, key_value, transition, r, false);
+void removal(int table[], int key_value[], int r, bool show) {
+	search(table, key_value, r, false);
 
 	if (key_value[1] != -1) {
 		table[key_value[0]] = -1;
@@ -199,14 +195,14 @@ void removal(int table[], int key_value[], int transition, int r, bool show) {
 
 
 
-void replacement(int table[], int key_value[], int transition) {
+void replacement(int table[], int key_value[]) {
 	cout << "\nУДАЛЯЕМЫЙ ЭЛЕМЕНТ";
 	int r = setting_value();
-	removal(table, key_value, transition, r, false);
+	removal(table, key_value, r, false);
 
 	cout << "\n\nДОБАВЛЯЕМЫЙ ЭЛЕМЕНТ";
 	r = setting_value();
-	addition(table, key_value, transition, r, false);
+	addition(table, key_value, r, false);
 
 	end(table, key_value, true);
 }
@@ -222,10 +218,11 @@ int main() {
 	int size_table = size_sample * 1.5;
 	int* sample = new int[size_sample];
 	int* table = new int[size_table];
-	int transition = 500;
+	int transition = 50;
 	int steps = 0;
+	int number_placements = size_sample;
 
-	int key_value[5]{ 0, 0, size_sample, size_table, steps };
+	int key_value[7]{ 0, 0, size_sample, size_table, steps, transition, number_placements };
 
 	for (int i = 0; i < key_value[3]; i++)
 		table[i] = 0;
@@ -257,10 +254,10 @@ int main() {
 			cout << endl;
 		cout << r << "\t";
 
-		add(table, key_value, transition, r, false);
+		add(table, key_value, r, false);
 	}
 
-	output_hash_table(table, key_value[3]);
+	output_hash_table(table, key_value);
 	calc_parameters(key_value);
 
 	while (true) {
@@ -275,15 +272,15 @@ int main() {
 		string var;
 		getline(cin, var);
 
-		if (var == "1") search(table, key_value, transition, setting_value(), true);
-		else if (var == "2") addition(table, key_value, transition, setting_value(), true);
-		else if (var == "3") removal(table, key_value, transition, setting_value(), true);
-		else if (var == "4") replacement(table, key_value, transition);
+		if (var == "1") search(table, key_value, setting_value(), true);
+		else if (var == "2") addition(table, key_value, setting_value(), true);
+		else if (var == "3") removal(table, key_value, setting_value(), true);
+		else if (var == "4") replacement(table, key_value);
 		else if (var == "5") break;
 	}
 
 	cout << endl;
-	output_hash_table(table, key_value[3]);
+	output_hash_table(table, key_value);
 	cout << "\n\nКоличество элементов в таблице: " << key_value[2];
 	calc_parameters(key_value);
 
