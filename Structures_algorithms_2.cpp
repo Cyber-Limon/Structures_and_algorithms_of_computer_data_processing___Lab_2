@@ -205,7 +205,7 @@ void removal(int table[], int key_value[], int r, bool show) {
 		table[key_value[0]] = -1;
 		key_value[2]--;
 
-		cout << "\n\nЭлемент `" << r << "` удален из индкеса `" << key_value[0] << "`";
+		cout << "\n\nЭлемент `" << r << "` удален из индекса `" << key_value[0] << "`";
 	}
 
 	end(table, key_value, show);
