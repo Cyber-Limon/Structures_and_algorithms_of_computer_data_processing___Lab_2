@@ -103,7 +103,7 @@ void add(int table[], int key_value[], int r, bool show) {
 	}
 
 	if (show) {
-		cout << "\n\nЭлемент `" << r << "` добален в индекс `" << message << "`";
+		cout << "\n\nЭлемент `" << r << "` добавлен в индекс `" << message << "`";
 	}
 }
 
